@@ -1,0 +1,77 @@
+version: '2.1'
+
+services:
+
+  rabitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - 15672:15672
+
+  config:
+    environment:
+      CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
+    build: config
+    restart: always
+    ports:
+      - 8888:8888
+
+  registry:
+    environment:
+      CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
+    build: registry
+    restart: always
+#    depends_on:
+#      config:
+#        condition: service_healthy
+    ports:
+      - 8761:8761
+
+  storage:
+    environment:
+      CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
+      STORAGE_SERVICE_PASSWORD: $STORAGE_SERVICE_PASSWORD
+    build: storage
+    restart: always
+#    depends_on:
+#      config:
+#        condition: service_healthy
+
+  auth-service:
+    environment:
+      CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
+      STORAGE_SERVICE_PASSWORD: $STORAGE_SERVICE_PASSWORD
+    build: auth-service
+    restart: always
+
+  st-db:
+    image: mysql:8.0.23
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'pb-service'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3307:3307
+    expose:
+      - 3307
+    volumes:
+      - pb-db:/var/lib/mysql
+
+volumes:
+  pb-db:
+#  pb-storage:
+#  config:
+#    build: config
+#    ports:
+#      - 8888:8888
+#
+#  registry:
+#    build: registry
+#
+#  storage:
+#    build: storage
+#    ports:
+#      - 5000:5000
+

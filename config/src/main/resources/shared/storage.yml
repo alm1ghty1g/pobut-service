@@ -1,0 +1,40 @@
+server:
+  servlet:
+    context-path: /storage
+  port: 2000
+
+feign:
+  hystrix:
+    enable: true
+
+security:
+  oauth2:
+    client:
+      clientId: storage-service
+      clientSecret: ${STORAGE_SERVICE_PASSWORD}
+      accessTokenUri: http://auth-service:5000/uaa/oauth/token
+      grant-type: client_credetials
+      scope: server
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: admin
+    url: jdbc:mysql://st-db:3307/pb-service?serverTimezone=UTC
+    platform: mysql
+    initialization-mode: always
+    continue-on-error: true
+    port: 3307
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create
+
+    database: mysql
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false;
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
